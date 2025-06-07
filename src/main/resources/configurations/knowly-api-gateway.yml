@@ -1,0 +1,46 @@
+server:
+  port: 9999
+
+spring:
+  application:
+    name: knowly-api-gateway
+  cloud:
+    gateway:
+      globalcors:
+        corsConfigurations:
+          '[/**]':
+            allowedOrigins: "*"
+            allowedMethods:
+            - GET
+            - POST
+            - PUT
+            - DELETE
+            - OPTIONS
+            allowedHeaders: "*"
+            allowCredentials: false
+            maxAge: 3600
+      discovery:
+        locator:
+          enabled: true
+      routes:
+        - id: user
+          uri: 'http://knowly-user:9901'
+          predicates:
+            - Path=/api/auth/**
+        - id: mail
+          uri: 'http://knowly-mail:9902'
+          predicates:
+            - Path=/api/v1/emails/**
+        - id: cloud-integration
+          uri: 'http://knowly-cloud-integration:9903'
+          predicates:
+            - Path=/api/v1/cloud/**
+eureka:
+  client:
+    register-with-eureka: false
+    serviceUrl:
+      defaultZone: http://knowly-eureka:8761/eureka/
+
+app:
+  jwt:
+    secret: tu_clave_secreta_muy_larga_y_segura_que_debe_tener_al_menos_256_bits

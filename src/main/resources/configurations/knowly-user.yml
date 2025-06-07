@@ -1,0 +1,28 @@
+server:
+  port: 9901
+
+spring:
+  application:
+    name: knowly-user
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://knowly-postgres-db:5432/knowly
+    username: knowly_user
+    password: knowly_password
+  jpa:
+    hibernate:
+      ddl-auto: update
+    database: postgresql
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+
+app:
+  jwt:
+    secret: tu_clave_secreta_muy_larga_y_segura_que_debe_tener_al_menos_256_bits
+    expiration-in-ms: 86400000
+
+eureka:
+  instance:
+    hostname: knowly-eureka
+  client:
+    serviceUrl:
+      defaultZone: http://knowly-eureka:8761/eureka
