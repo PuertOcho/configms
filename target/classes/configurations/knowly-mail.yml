@@ -1,0 +1,27 @@
+server:
+  port: 9902
+
+spring:
+  application:
+    name: knowly-mail
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://knowly-postgres-db:5432/knowly
+    username: knowly_user
+    password: knowly_password
+  jpa:
+    hibernate:
+      ddl-auto: update
+    database: postgresql
+    show-sql: true
+    open-in-view: false
+    properties:
+      hibernate:
+        format_sql: true
+
+eureka:
+  instance:
+    hostname: knowly-eureka
+  client:
+    serviceUrl:
+      defaultZone: http://knowly-eureka:8761/eureka

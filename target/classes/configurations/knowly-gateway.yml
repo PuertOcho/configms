@@ -3,7 +3,7 @@ server:
 
 spring:
   application:
-    name: knowly-api-gateway
+    name: knowly-gateway
   cloud:
     gateway:
       globalcors:

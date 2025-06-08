@@ -1,0 +1,54 @@
+server:
+  port: 9903
+
+spring:
+  application:
+    name: knowly-cloud-integration
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://knowly-postgres-db:5432/knowly
+    username: knowly_user
+    password: knowly_password
+  jpa:
+    hibernate:
+      ddl-auto: update
+    database: postgresql
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
+
+eureka:
+  instance:
+    hostname: knowly-eureka
+  client:
+    serviceUrl:
+      defaultZone: http://knowly-eureka:8761/eureka
+
+# Configuración específica para integraciones
+cloud-integration:
+  providers:
+    google-drive:
+      enabled: false
+    dropbox:
+      enabled: false
+    onedrive:
+      enabled: false
+    notion:
+      enabled: true
+
+# Notion API Configuration
+notion:
+  api:
+    version: "2022-06-28"
+  client:
+    id: YOUR_NOTION_CLIENT_ID
+    secret: YOUR_NOTION_CLIENT_SECRET
+  redirect:
+    uri: http://localhost:8081/api/v1/cloud/notion/callback
+  auth:
+    success:
+      redirect: http://localhost:3000/settings/applications?integration=notion&status=success
+    failure:
+      redirect: http://localhost:3000/settings/applications?integration=notion&status=failure
