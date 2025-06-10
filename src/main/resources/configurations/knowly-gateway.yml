@@ -1,46 +1,47 @@
 server:
-  port: 9999
+  port: ${PORT_GATEWAY}
 
 spring:
   application:
-    name: knowly-gateway
+    name: ${GATEWAY_SERVICE}
   cloud:
     gateway:
       globalcors:
         corsConfigurations:
           '[/**]':
-            allowedOrigins: "*"
+            allowedOrigins: ${CORS_ALLOWED_ORIGINS:-"*"}
             allowedMethods:
             - GET
             - POST
             - PUT
             - DELETE
             - OPTIONS
-            allowedHeaders: "*"
-            allowCredentials: false
-            maxAge: 3600
+            allowedHeaders: ${CORS_ALLOWED_HEADERS:-"*"}
+            allowCredentials: ${CORS_ALLOW_CREDENTIALS:-false}
+            maxAge: ${CORS_MAX_AGE:-3600}
       discovery:
         locator:
           enabled: true
       routes:
         - id: user
-          uri: 'http://knowly-user:9901'
+          uri: 'http://${USER_SERVICE}:${PORT_USER}'
           predicates:
             - Path=/api/auth/**
         - id: mail
-          uri: 'http://knowly-mail:9902'
+          uri: 'http://${MAIL_SERVICE}:${PORT_MAIL}'
           predicates:
             - Path=/api/v1/emails/**
         - id: cloud-integration
-          uri: 'http://knowly-cloud-integration:9903'
+          uri: 'http://${CLOUD_SERVICE}:${PORT_CLOUD}'
           predicates:
             - Path=/api/v1/cloud/**
+
 eureka:
   client:
     register-with-eureka: false
     serviceUrl:
-      defaultZone: http://knowly-eureka:8761/eureka/
+      defaultZone: http://${EUREKA_SERVICE}:${PORT_EUREKA}/eureka/
 
 app:
   jwt:
-    secret: tu_clave_secreta_muy_larga_y_segura_que_debe_tener_al_menos_256_bits
+    secret: ${JWT_SECRET}

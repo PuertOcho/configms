@@ -1,9 +1,9 @@
 server:
-  port: 8888
+  port: ${PORT_CONFIG}
 
 spring:
   application:
-    name: knowly-config
+    name: ${SPRING_APPLICATION_NAME}
   profiles:
     active: native
   cloud:

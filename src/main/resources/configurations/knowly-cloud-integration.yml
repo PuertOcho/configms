@@ -1,14 +1,14 @@
 server:
-  port: 9903
+  port: ${PORT_CLOUD}
 
 spring:
   application:
-    name: knowly-cloud-integration
+    name: ${CLOUD_SERVICE}
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://knowly-postgres-db:5432/knowly
-    username: knowly_user
-    password: knowly_password
+    url: jdbc:postgresql://${DB_SERVICE}:${PORT_DB}/${DB_NAME}
+    username: ${DB_USER}
+    password: ${DB_PASSWORD}
   jpa:
     hibernate:
       ddl-auto: update
@@ -16,39 +16,39 @@ spring:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
   servlet:
     multipart:
-      max-file-size: 10MB
-      max-request-size: 10MB
+      max-file-size: ${MAX_FILE_SIZE}
+      max-request-size: ${MAX_REQUEST_SIZE}
 
 eureka:
   instance:
-    hostname: knowly-eureka
+    hostname: ${EUREKA_SERVICE}
   client:
     serviceUrl:
-      defaultZone: http://knowly-eureka:8761/eureka
+      defaultZone: http://${EUREKA_SERVICE}:${EUREKA_PORT}/eureka
 
 # Configuración específica para integraciones
 cloud-integration:
   providers:
     google-drive:
-      enabled: false
+      enabled: ${GOOGLE_DRIVE_ENABLED}
     dropbox:
-      enabled: false
+      enabled: ${DROPBOX_ENABLED}
     onedrive:
-      enabled: false
+      enabled: ${ONEDRIVE_ENABLED}
     notion:
-      enabled: true
+      enabled: ${NOTION_ENABLED}
 
 # Notion API Configuration
 notion:
   api:
-    version: "2022-06-28"
+    version: ${NOTION_API_VERSION}
   client:
-    id: YOUR_NOTION_CLIENT_ID
-    secret: YOUR_NOTION_CLIENT_SECRET
+    id: ${NOTION_CLIENT_ID}
+    secret: ${NOTION_CLIENT_SECRET}
   redirect:
-    uri: http://localhost:8081/api/v1/cloud/notion/callback
+    uri: ${NOTION_REDIRECT_URI}
   auth:
     success:
-      redirect: http://localhost:3000/settings/applications?integration=notion&status=success
+      redirect: ${NOTION_SUCCESS_REDIRECT}
     failure:
-      redirect: http://localhost:3000/settings/applications?integration=notion&status=failure
+      redirect: ${NOTION_FAILURE_REDIRECT}
