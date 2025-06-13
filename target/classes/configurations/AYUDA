@@ -1,0 +1,8 @@
+# Ruta de los archivos
+/home/puertocho/Proyectos/knowly/knowly_server/configms/src/main/resources/configurations
+
+# Añadir knowly- al principio de los nombres de los archivos
+for f in *; do mv -- "$f" "knowly-$f"; done
+
+# Renombrar los archivos que empiezan por AAA- por knowly-
+rename 's/^AAA-/knowly-/' AAA-*
