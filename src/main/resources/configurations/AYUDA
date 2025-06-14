@@ -6,3 +6,12 @@ for f in *; do mv -- "$f" "knowly-$f"; done
 
 # Renombrar los archivos que empiezan por AAA- por knowly-
 rename 's/^AAA-/knowly-/' AAA-*
+
+
+
+
+cd configms/  && echo "==================== configms  ====================" && git status && cd ..
+cd eurekams/  && echo "==================== eurekams  ====================" && git status && cd ..
+cd gatewayms/ && echo "==================== gatewayms ====================" && git status && cd ..
+cd mailms/    && echo "==================== mailms    ====================" && git status && cd ..
+cd userms/    && echo "==================== userms    ====================" && git status && cd ..
