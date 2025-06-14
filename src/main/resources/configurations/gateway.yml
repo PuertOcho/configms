@@ -31,10 +31,6 @@ spring:
           uri: 'http://${MAIL_SERVICE}:${PORT_MAIL}'
           predicates:
             - Path=/api/v1/emails/**
-        - id: cloud
-          uri: 'http://${CLOUD_SERVICE}:${PORT_CLOUD}'
-          predicates:
-            - Path=/api/v1/cloud/**
 
 eureka:
   client:
