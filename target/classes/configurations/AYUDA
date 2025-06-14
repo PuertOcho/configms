@@ -6,3 +6,6 @@ for f in *; do mv -- "$f" "knowly-$f"; done
 
 # Renombrar los archivos que empiezan por AAA- por knowly-
 rename 's/^AAA-/knowly-/' AAA-*
+
+# Añadir los archivos al repositorio
+git add * -f && git commit -m "Release dev" && git push && git status && cd ..
