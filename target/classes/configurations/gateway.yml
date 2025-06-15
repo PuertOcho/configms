@@ -22,15 +22,6 @@ spring:
       discovery:
         locator:
           enabled: true
-      routes:
-        - id: user
-          uri: 'http://${USER_SERVICE}:${PORT_USER}'
-          predicates:
-            - Path=/api/auth/**
-        - id: mail
-          uri: 'http://${MAIL_SERVICE}:${PORT_MAIL}'
-          predicates:
-            - Path=/api/v1/emails/**
 
 eureka:
   client:
@@ -41,3 +32,8 @@ eureka:
 app:
   jwt:
     secret: ${JWT_SECRET}
+
+microservicios:
+  enable-user: ${ENABLE_USER}
+  enable-mail: ${ENABLE_MAIL}
+  enable-cloud: ${ENABLE_CLOUD}
