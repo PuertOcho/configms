@@ -36,6 +36,3 @@ for service in "${services[@]}"; do
   git push -u origin "$branch"
   cd ..
 done
-
-
-
