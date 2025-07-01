@@ -37,3 +37,4 @@ microservicios:
   enable-user: ${ENABLE_USER}
   enable-mail: ${ENABLE_MAIL}
   enable-cloud: ${ENABLE_CLOUD}
+  enable-intent-manager: ${ENABLE_INTENT_MANAGER}

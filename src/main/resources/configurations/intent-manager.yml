@@ -1,0 +1,52 @@
+server:
+  port: ${PORT_INTENT_MANAGER}
+
+spring:
+  application:
+    name: ${INTENT_MANAGER_SERVICE}
+
+# Configuración de LangChain4j para OpenAI
+langchain4j:
+  open-ai:
+    chat-model:
+      api-key: ${OPENAI_API_KEY}
+      model-name: gpt-4-turbo
+      temperature: 0.0
+      max-tokens: 250
+      timeout: 30s
+
+# Configuración personalizada del agente
+agent:
+  system-message: |
+    Eres un asistente de automatización de tareas. Tu función es comprender la petición del usuario
+    y ejecutar la herramienta más adecuada para cumplirla.
+    Solo debes usar las herramientas disponibles.
+    Responde de forma concisa y directa, confirmando la acción realizada.
+  
+  # Configuración de herramientas del sistema
+  system-tools:
+    enabled: true
+    allowed-projects: "knowly,puertocho-assistant"
+    base-projects-path: "/home/puertocho/Proyectos"
+  
+  # Configuración de herramientas de hogar inteligente
+  smart-home:
+    enabled: true
+    # URL del microservicio de domótica (cuando esté disponible)
+    service-url: http://${SMART_HOME_SERVICE:smart-home-ms}:${PORT_SMART_HOME:8085}
+
+# Configuración de Eureka para el descubrimiento de servicios
+eureka:
+  instance:
+    hostname: ${EUREKA_SERVICE}
+  client:
+    serviceUrl:
+      defaultZone: http://${EUREKA_SERVICE}:${PORT_EUREKA}/eureka
+
+# Configuración de logging
+logging:
+  level:
+    com.intentmanagerms: DEBUG
+    dev.langchain4j: INFO
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n" 

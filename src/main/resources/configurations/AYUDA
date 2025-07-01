@@ -1,11 +1,11 @@
 # Ruta de los archivos
-/home/puertocho/Proyectos/knowly/knowly_server/configms/src/main/resources/configurations
+/home/puertocho/Proyectos/knowly/puertocho-assistant-server/configms/src/main/resources/configurations
 
-# Añadir knowly- al principio de los nombres de los archivos
-for f in *; do mv -- "$f" "knowly-$f"; done
+# Añadir puertocho-assistant- al principio de los nombres de los archivos
+for f in *; do mv -- "$f" "puertocho-assistant-$f"; done
 
-# Renombrar los archivos que empiezan por AAA- por knowly-
-rename 's/^AAA-/knowly-/' AAA-*
+# Renombrar los archivos que empiezan por AAA- por puertocho-assistant-
+rename 's/^AAA-/puertocho-assistant-/' AAA-*
 
 
 # Añadir los archivos al repositorio
@@ -18,6 +18,12 @@ cd gatewayms/ && echo "========== gatewayms ==========" && git status && cd ..
 cd mailms/ && echo "========== mailms ==========" && git status && cd ..
 cd userms/ && echo "========== userms ==========" && git status && cd ..
 
+
+cd configms/ && echo "========== configms ==========" && git pull && cd ..
+cd eurekams/ && echo "========== eurekams ==========" && git pull && cd ..
+cd gatewayms/ && echo "========== gatewayms ==========" && git pull && cd ..
+cd mailms/ && echo "========== mailms ==========" && git pull && cd ..
+cd userms/ && echo "========== userms ==========" && git pull && cd ..
 
 # Crear una rama para cada microservicio
 #!/bin/bash
