@@ -7,6 +7,7 @@ for f in *; do mv -- "$f" "puertocho-assistant-$f"; done
 # Renombrar los archivos que empiezan por AAA- por puertocho-assistant-
 rename 's/^AAA-/puertocho-assistant-/' AAA-*
 
+
 # Añadir los archivos al repositorio
 git add * -f && git commit -m "Release dev" && git push && git status && cd ..
 
@@ -42,6 +43,3 @@ for service in "${services[@]}"; do
   git push -u origin "$branch"
   cd ..
 done
-
-
-
