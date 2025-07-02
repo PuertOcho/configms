@@ -35,6 +35,15 @@ agent:
     # URL del microservicio de domótica (cuando esté disponible)
     service-url: http://${SMART_HOME_SERVICE:smart-home-ms}:${PORT_SMART_HOME:8085}
 
+# Configuración del servicio NLU
+nlu:
+  url: ${NLU_URL:http://localhost:5001}
+  domain: hogar
+  locale: es
+  enabled: true
+  # Umbral mínimo de confianza para aceptar una intención
+  confidence-threshold: 0.3
+
 # Configuración de Eureka para el descubrimiento de servicios
 eureka:
   instance:
