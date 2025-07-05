@@ -4,6 +4,19 @@ server:
 spring:
   application:
     name: ${INTENT_MANAGER_SERVICE}
+  
+  # Configuración Redis para gestión de sesiones conversacionales
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+      password: ${REDIS_PASSWORD:}
+      timeout: 2000ms
+      database: ${REDIS_DB:0}
+  
+  session:
+    store-type: redis
+    timeout: 30m  # TTL para sesiones conversacionales
 
 # Configuración de LangChain4j para OpenAI
 langchain4j:
