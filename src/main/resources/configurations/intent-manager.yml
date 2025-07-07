@@ -42,7 +42,7 @@ agent:
     allowed-projects: "knowly,puertocho-assistant"
     base-projects-path: "/home/puertocho/Proyectos"
   
-  # Configuración de herramientas de hogar inteligente
+  # Configuración de herramientas de intents inteligente
   smart-home:
     enabled: true
     # URL del microservicio de domótica (cuando esté disponible)
@@ -51,11 +51,17 @@ agent:
 # Configuración del servicio NLU
 nlu:
   url: ${NLU_URL:http://localhost:5001}
-  domain: hogar
+  domain: intents
   locale: es
-  enabled: true
   # Umbral mínimo de confianza para aceptar una intención
   confidence-threshold: 0.3
+  enabled: ${NLU_ENABLED:false}
+
+# Configuración del servicio DU
+du:
+  url: ${DU_URL:http://du-puertocho-ms:5005/model/parse}
+  locale: es
+  enabled: ${DU_ENABLED:true}
 
 # Configuración de Eureka para el descubrimiento de servicios
 eureka:
