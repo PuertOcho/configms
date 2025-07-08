@@ -59,9 +59,19 @@ nlu:
 
 # Configuración del servicio DU
 du:
-  url: ${DU_URL:http://du-puertocho-ms:5005/model/parse}
+  url: ${DU_URL:http://du-puertocho-ms:5005/webhooks/rest/webhook}
   locale: es
   enabled: ${DU_ENABLED:true}
+
+# Configuración de autenticación automática
+auth:
+  autologin:
+    enabled: ${AUTOLOGIN_ENABLED}
+  service:
+    username: ${SERVICE_USERNAME}
+    password: ${SERVICE_PASSWORD}
+    email: ${SERVICE_EMAIL}
+    fullname: ${SERVICE_FULLNAME}
 
 # Configuración de Eureka para el descubrimiento de servicios
 eureka:
@@ -77,4 +87,4 @@ logging:
     com.intentmanagerms: DEBUG
     dev.langchain4j: INFO
   pattern:
-    console: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n" 
+    console: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
