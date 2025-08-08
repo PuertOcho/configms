@@ -1,21 +1,24 @@
 server:
-  port: ${PORT_INTENT_MANAGER:8082}
+  port: ${PORT_INTENT_MANAGER:9904}
 
 spring:
   application:
-    name: ${INTENT_MANAGER_SERVICE:intent-manager}
+    name: ${INTENT_MANAGER_SERVICE}
   
   # Redis Configuration for Conversation State
   data:
     redis:
-      host: ${REDIS_HOST:localhost}
+      host: ${REDIS_HOST:redis}
       port: ${REDIS_PORT:6379}
-      timeout: 2000ms
+      password: ${REDIS_PASSWORD:}
+      database: ${REDIS_DATABASE:0}
+      timeout: ${REDIS_TIMEOUT:2000ms}
       lettuce:
         pool:
-          max-active: 8
-          max-idle: 8
-          min-idle: 2
+          max-active: ${REDIS_MAX_ACTIVE:8}
+          max-idle: ${REDIS_MAX_IDLE:8}
+          min-idle: ${REDIS_MIN_IDLE:0}
+          max-wait: ${REDIS_MAX_WAIT:-1ms}
   
   # Jackson JSON Configuration
   jackson:
@@ -27,14 +30,11 @@ spring:
 
 # Eureka Client Configuration
 eureka:
-  client:
-    service-url:
-      defaultZone: ${EUREKA_URL:http://eurekams:8761/eureka/}
-    fetch-registry: true
-    register-with-eureka: true
   instance:
-    prefer-ip-address: true
-    hostname: ${HOSTNAME:intent-manager}
+    hostname: ${EUREKA_SERVICE}
+  client:
+    serviceUrl:
+      defaultZone: http://${EUREKA_SERVICE}:${PORT_EUREKA}/eureka
 
 # Configuration Files
 config:
@@ -44,14 +44,32 @@ config:
     moe-voting: ${MOE_VOTING_FILE:classpath:config/moe_voting.json}
     hot-reload: ${CONFIG_HOT_RELOAD:true}
 
-# MCP Integration Configuration
+# Intent Configuration Management
+intent:
+  config:
+    file: ${INTENT_CONFIG_FILE:classpath:config/intents.json}
+    hot-reload:
+      enabled: ${INTENT_HOT_RELOAD_ENABLED:true}
+      interval: ${INTENT_HOT_RELOAD_INTERVAL:30}
+    default-confidence-threshold: ${INTENT_DEFAULT_CONFIDENCE_THRESHOLD:0.7}
+    default-max-examples-for-rag: ${INTENT_DEFAULT_MAX_EXAMPLES_FOR_RAG:5}
+
+# MCP Registry Configuration
 mcp:
   enabled: ${MCP_ENABLED:true}
   timeout: 30s
   retry-attempts: 3
+  registry:
+    file: ${MCP_REGISTRY_FILE:classpath:config/mcp_registry.json}
+    hot-reload:
+      enabled: ${MCP_REGISTRY_HOT_RELOAD_ENABLED:true}
+      interval: ${MCP_REGISTRY_HOT_RELOAD_INTERVAL:30}
+    default-timeout: ${MCP_REGISTRY_DEFAULT_TIMEOUT:30}
+    default-retry-attempts: ${MCP_REGISTRY_DEFAULT_RETRY_ATTEMPTS:3}
+    default-health-check-interval: ${MCP_REGISTRY_DEFAULT_HEALTH_CHECK_INTERVAL:60}
   services:
     whisper:
-      url: ${WHISPER_SERVICE_URL:http://whisper-ms:5000}
+      url: ${WHISPER_SERVICE_URL:http://192.168.1.88:5000}
       enabled: ${WHISPER_ENABLED:true}
     weather:
       url: ${WEATHER_SERVICE_URL:http://weather-mcp:5000}
@@ -89,14 +107,36 @@ vector-store:
 # MoE Configuration
 moe:
   enabled: ${MOE_ENABLED:true}
-  consensus-threshold: 0.6
-  max-debate-rounds: 1
+  timeout-per-vote: ${MOE_TIMEOUT_PER_VOTE:30}
+  parallel-voting: ${MOE_PARALLEL_VOTING:true}
+  consensus-threshold: ${MOE_CONSENSUS_THRESHOLD:0.6}
+  max-debate-rounds: ${MOE_MAX_DEBATE_ROUNDS:2}
+  debate-timeout: ${MOE_DEBATE_TIMEOUT:60}
+  enable-debate: ${MOE_ENABLE_DEBATE:true}
+  debate-consensus-improvement-threshold: ${MOE_DEBATE_CONSENSUS_IMPROVEMENT_THRESHOLD:0.1}
+  configuration:
+    file: ${MOE_CONFIGURATION_FILE:classpath:config/moe_voting.json}
+    hot-reload:
+      enabled: ${MOE_CONFIGURATION_HOT_RELOAD_ENABLED:true}
+      interval: ${MOE_CONFIGURATION_HOT_RELOAD_INTERVAL:30}
+    force-initial-load: true
+    retry-on-failure: true
+    max-retry-attempts: 3
   llm-a:
     model: ${MOE_LLM_A_MODEL:gpt-4}
   llm-b:
     model: ${MOE_LLM_B_MODEL:claude-3-sonnet-20240229}
   llm-c:
     model: ${MOE_LLM_C_MODEL:gpt-3.5-turbo}
+  consensus:
+    algorithm: ${MOE_CONSENSUS_ALGORITHM:weighted-majority}
+    confidence-threshold: ${MOE_CONSENSUS_CONFIDENCE_THRESHOLD:0.6}
+    minimum-votes: ${MOE_CONSENSUS_MINIMUM_VOTES:2}
+    enable-weighted-scoring: ${MOE_CONSENSUS_ENABLE_WEIGHTED_SCORING:true}
+    enable-confidence-boosting: ${MOE_CONSENSUS_ENABLE_CONFIDENCE_BOOSTING:true}
+    confidence-boost-factor: ${MOE_CONSENSUS_CONFIDENCE_BOOST_FACTOR:0.1}
+    enable-entity-merging: ${MOE_CONSENSUS_ENABLE_ENTITY_MERGING:true}
+    enable-subtask-consolidation: ${MOE_CONSENSUS_ENABLE_SUBTASK_CONSOLIDATION:true}
 
 # Conversation Management
 conversation:
@@ -105,14 +145,158 @@ conversation:
   auto-complete-threshold: ${AUTO_COMPLETE_THRESHOLD:0.85}
   subtask-timeout: ${SUBTASK_TIMEOUT:120}  # 2 minutes per subtask
 
+# Progress Tracker Configuration
+progress:
+  tracker:
+    enable-real-time-tracking: ${PROGRESS_TRACKER_ENABLE_REAL_TIME_TRACKING:true}
+    update-interval-ms: ${PROGRESS_TRACKER_UPDATE_INTERVAL_MS:1000}
+    enable-notifications: ${PROGRESS_TRACKER_ENABLE_NOTIFICATIONS:true}
+    enable-completion-validation: ${PROGRESS_TRACKER_ENABLE_COMPLETION_VALIDATION:true}
+    max-tracking-duration-minutes: ${PROGRESS_TRACKER_MAX_TRACKING_DURATION_MINUTES:30}
+    enable-auto-cleanup: ${PROGRESS_TRACKER_ENABLE_AUTO_CLEANUP:true}
+    cleanup-interval-minutes: ${PROGRESS_TRACKER_CLEANUP_INTERVAL_MINUTES:5}
+
+# Slot Filling Configuration
+slot-filling:
+  enable-dynamic-questions: ${SLOT_FILLING_ENABLE_DYNAMIC_QUESTIONS:true}
+  max-attempts: ${SLOT_FILLING_MAX_ATTEMPTS:3}
+  confidence-threshold: ${SLOT_FILLING_CONFIDENCE_THRESHOLD:0.7}
+  enable-context-aware-questions: ${SLOT_FILLING_ENABLE_CONTEXT_AWARE_QUESTIONS:true}
+  enable-llm-extraction: ${SLOT_FILLING_ENABLE_LLM_EXTRACTION:true}
+  extraction-confidence-threshold: ${SLOT_FILLING_EXTRACTION_CONFIDENCE_THRESHOLD:0.7}
+  enable-pattern-extraction: ${SLOT_FILLING_ENABLE_PATTERN_EXTRACTION:true}
+  enable-context-extraction: ${SLOT_FILLING_ENABLE_CONTEXT_EXTRACTION:true}
+  enable-llm-validation: ${SLOT_FILLING_ENABLE_LLM_VALIDATION:true}
+  validation-confidence-threshold: ${SLOT_FILLING_VALIDATION_CONFIDENCE_THRESHOLD:0.8}
+
+# Task Decomposition Configuration
+task:
+  decomposition:
+    enable-llm-analysis: ${TASK_DECOMPOSITION_ENABLE_LLM_ANALYSIS:true}
+    max-subtasks-per-request: ${TASK_DECOMPOSITION_MAX_SUBTASKS_PER_REQUEST:10}
+    enable-dependency-detection: ${TASK_DECOMPOSITION_ENABLE_DEPENDENCY_DETECTION:true}
+    enable-priority-assignment: ${TASK_DECOMPOSITION_ENABLE_PRIORITY_ASSIGNMENT:true}
+    enable-parallel-execution: ${TASK_DECOMPOSITION_ENABLE_PARALLEL_EXECUTION:true}
+    confidence-threshold: ${TASK_DECOMPOSITION_CONFIDENCE_THRESHOLD:0.7}
+    max-processing-time-ms: ${TASK_DECOMPOSITION_MAX_PROCESSING_TIME_MS:10000}
+  analyzer:
+    enable-llm-analysis: ${TASK_ANALYZER_ENABLE_LLM_ANALYSIS:true}
+    enable-pattern-analysis: ${TASK_ANALYZER_ENABLE_PATTERN_ANALYSIS:true}
+    confidence-threshold: ${TASK_ANALYZER_CONFIDENCE_THRESHOLD:0.7}
+    max-subtasks-per-analysis: ${TASK_ANALYZER_MAX_SUBTASKS_PER_ANALYSIS:10}
+  validator:
+    enable-action-validation: ${TASK_VALIDATOR_ENABLE_ACTION_VALIDATION:true}
+    enable-entity-validation: ${TASK_VALIDATOR_ENABLE_ENTITY_VALIDATION:true}
+    enable-dependency-validation: ${TASK_VALIDATOR_ENABLE_DEPENDENCY_VALIDATION:true}
+    confidence-threshold: ${TASK_VALIDATOR_CONFIDENCE_THRESHOLD:0.7}
+    max-subtasks-per-request: ${TASK_VALIDATOR_MAX_SUBTASKS_PER_REQUEST:10}
+
+# Dependency Resolver Configuration
+dependency:
+  resolver:
+    enable-semantic-analysis: ${DEPENDENCY_RESOLVER_ENABLE_SEMANTIC_ANALYSIS:true}
+    enable-pattern-analysis: ${DEPENDENCY_RESOLVER_ENABLE_PATTERN_ANALYSIS:true}
+    confidence-threshold: ${DEPENDENCY_RESOLVER_CONFIDENCE_THRESHOLD:0.7}
+
+# Configuración del motor RAG
+rag:
+  classifier:
+    default-max-examples: ${RAG_DEFAULT_MAX_EXAMPLES:5}
+    default-confidence-threshold: ${RAG_DEFAULT_CONFIDENCE_THRESHOLD:0.7}
+    similarity-threshold: ${RAG_SIMILARITY_THRESHOLD:0.6}
+    enable-fallback: ${RAG_ENABLE_FALLBACK:true}
+    fallback-confidence-threshold: ${RAG_FALLBACK_CONFIDENCE_THRESHOLD:0.5}
+    max-processing-time-ms: ${RAG_MAX_PROCESSING_TIME_MS:10000}
+  confidence:
+    weights:
+      llm: ${RAG_CONFIDENCE_WEIGHT_LLM:0.25}
+      similarity: ${RAG_CONFIDENCE_WEIGHT_SIMILARITY:0.20}
+      consistency: ${RAG_CONFIDENCE_WEIGHT_CONSISTENCY:0.15}
+      example-count: ${RAG_CONFIDENCE_WEIGHT_EXAMPLE_COUNT:0.10}
+      semantic-diversity: ${RAG_CONFIDENCE_WEIGHT_SEMANTIC_DIVERSITY:0.10}
+      temporal: ${RAG_CONFIDENCE_WEIGHT_TEMPORAL:0.05}
+      embedding-quality: ${RAG_CONFIDENCE_WEIGHT_EMBEDDING_QUALITY:0.05}
+      entropy: ${RAG_CONFIDENCE_WEIGHT_ENTROPY:0.05}
+      contextual: ${RAG_CONFIDENCE_WEIGHT_CONTEXTUAL:0.03}
+      prompt-robustness: ${RAG_CONFIDENCE_WEIGHT_PROMPT_ROBUSTNESS:0.02}
+    thresholds:
+      optimal-processing-time-ms: ${RAG_CONFIDENCE_OPTIMAL_PROCESSING_TIME_MS:500}
+      max-processing-time-ms: ${RAG_CONFIDENCE_MAX_PROCESSING_TIME_MS:2000}
+      min-examples: ${RAG_CONFIDENCE_MIN_EXAMPLES:2}
+  similarity:
+    search-algorithm: ${RAG_SIMILARITY_SEARCH_ALGORITHM:hybrid}
+    diversity-threshold: ${RAG_SIMILARITY_DIVERSITY_THRESHOLD:0.3}
+    intent-weight: ${RAG_SIMILARITY_INTENT_WEIGHT:0.7}
+    content-weight: ${RAG_SIMILARITY_CONTENT_WEIGHT:0.3}
+    enable-diversity-filtering: ${RAG_SIMILARITY_ENABLE_DIVERSITY_FILTERING:true}
+    enable-intent-clustering: ${RAG_SIMILARITY_ENABLE_INTENT_CLUSTERING:true}
+    max-cluster-size: ${RAG_SIMILARITY_MAX_CLUSTER_SIZE:3}
+    enable-semantic-boosting: ${RAG_SIMILARITY_ENABLE_SEMANTIC_BOOSTING:true}
+  prompt:
+    strategy: ${RAG_PROMPT_STRATEGY:adaptive}
+    max-context-length: ${RAG_PROMPT_MAX_CONTEXT_LENGTH:3000}
+    enable-chain-of-thought: ${RAG_PROMPT_ENABLE_CHAIN_OF_THOUGHT:true}
+    enable-contextual-hints: ${RAG_PROMPT_ENABLE_CONTEXTUAL_HINTS:true}
+    enable-entity-extraction: ${RAG_PROMPT_ENABLE_ENTITY_EXTRACTION:true}
+    enable-confidence-calibration: ${RAG_PROMPT_ENABLE_CONFIDENCE_CALIBRATION:true}
+    temperature: ${RAG_PROMPT_TEMPERATURE:0.3}
+    max-tokens: ${RAG_PROMPT_MAX_TOKENS:2048}
+    language: ${RAG_PROMPT_LANGUAGE:es}
+  fallback:
+    enable-gradual-degradation: ${RAG_FALLBACK_ENABLE_GRADUAL_DEGRADATION:true}
+    max-degradation-levels: ${RAG_FALLBACK_MAX_DEGRADATION_LEVELS:5}
+    similarity-reduction-factor: ${RAG_FALLBACK_SIMILARITY_REDUCTION_FACTOR:0.2}
+    enable-keyword-fallback: ${RAG_FALLBACK_ENABLE_KEYWORD_FALLBACK:true}
+    enable-context-fallback: ${RAG_FALLBACK_ENABLE_CONTEXT_FALLBACK:true}
+    enable-general-domain-fallback: ${RAG_FALLBACK_ENABLE_GENERAL_DOMAIN_FALLBACK:true}
+    min-confidence-for-degradation: ${RAG_FALLBACK_MIN_CONFIDENCE_FOR_DEGRADATION:0.3}
+    max-processing-time-ms: ${RAG_FALLBACK_MAX_PROCESSING_TIME_MS:5000}
+
+
+
+
+
+
+
+
+
+# Audio Processing Configuration
+audio:
+  processing:
+    max-file-size: ${AUDIO_MAX_FILE_SIZE:10485760}
+    supported-formats: ${AUDIO_SUPPORTED_FORMATS:wav,mp3,m4a,flac}
+    temp-directory: ${AUDIO_TEMP_DIRECTORY:/tmp/audio}
+    enable-metadata: ${AUDIO_ENABLE_METADATA:true}
+    metadata-fields:
+      - location
+      - temperature
+      - device_id
+      - timestamp
+      - user_id
+    validation:
+      max-duration-seconds: ${AUDIO_MAX_DURATION:60}
+      min-duration-seconds: ${AUDIO_MIN_DURATION:0}
+      sample-rate-range: ${AUDIO_SAMPLE_RATE_RANGE:8000-48000}
+    whisper:
+      service-url: ${WHISPER_SERVICE_URL:http://192.168.1.88:5000}
+      enabled: ${WHISPER_ENABLED:true}
+      timeout: ${WHISPER_TIMEOUT:30}
+      max-retries: ${WHISPER_MAX_RETRIES:3}
+      supported-languages: ${WHISPER_SUPPORTED_LANGUAGES:es,en}
+      model: ${WHISPER_MODEL:base}
+    pipeline:
+      enable-audio-response: ${AUDIO_PIPELINE_ENABLE_AUDIO_RESPONSE:true}
+      enable-text-response: ${AUDIO_PIPELINE_ENABLE_TEXT_RESPONSE:true}
+      enable-metadata-enrichment: ${AUDIO_PIPELINE_ENABLE_METADATA_ENRICHMENT:true}
+      max-processing-time-ms: ${AUDIO_PIPELINE_MAX_PROCESSING_TIME_MS:30000}
+
 # Logging Configuration
 logging:
   level:
     com.intentmanagerms: ${LOG_LEVEL:INFO}
-    dev.langchain4j: ${LANGCHAIN4J_LOG_LEVEL:WARN}
-    org.springframework.data.redis: WARN
+    org.springframework.web: ${SPRING_LOG_LEVEL:INFO}
   pattern:
-    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level [%logger{36}] - %msg%n"
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
 
 # Management & Monitoring
 management:
