@@ -5,6 +5,15 @@ spring:
   application:
     name: ${INTENT_MANAGER_SERVICE}
   
+  # Multipart Configuration for Audio Uploads
+  servlet:
+    multipart:
+      max-file-size: ${MULTIPART_MAX_FILE_SIZE:10MB}
+      max-request-size: ${MULTIPART_MAX_REQUEST_SIZE:10MB}
+      file-size-threshold: ${MULTIPART_FILE_SIZE_THRESHOLD:2KB}
+      location: ${MULTIPART_LOCATION:/tmp}
+      resolve-lazily: ${MULTIPART_RESOLVE_LAZILY:false}
+  
   # Redis Configuration for Conversation State
   data:
     redis:
@@ -259,6 +268,22 @@ rag:
 
 
 
+
+# TTS Generation Configuration
+tts:
+  enabled: ${TTS_ENABLED:true}
+  default-provider: ${TTS_DEFAULT_PROVIDER:azure}
+  timeout: ${TTS_TIMEOUT:30}
+  max-retries: ${TTS_MAX_RETRIES:3}
+  cache-enabled: ${TTS_CACHE_ENABLED:true}
+  cache-ttl: ${TTS_CACHE_TTL:3600}
+  providers:
+    azure:
+      url: ${AZURE_TTS_URL:http://192.168.1.88:5004}
+      enabled: ${AZURE_TTS_ENABLED:true}
+    kokoro:
+      url: ${KOKORO_TTS_URL:http://192.168.1.88:5002}
+      enabled: ${KOKORO_TTS_ENABLED:true}
 
 # Audio Processing Configuration
 audio:
